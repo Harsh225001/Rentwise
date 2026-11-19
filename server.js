@@ -1,103 +1,25 @@
 import express from 'express';
 import http from 'http';
-import helmet from 'helmet';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 
 import { config } from './backend/config/index.js';
-import { connectDB } from './backend/config/db.js';
-import { seedDatabase } from './backend/scripts/seed.js';
-
-import authRoutes from './backend/routes/authRoutes.js';
-import userRoutes from './backend/routes/userRoutes.js';
-import propertyRoutes from './backend/routes/propertyRoutes.js';
-import roomRoutes from './backend/routes/roomRoutes.js';
-import assignmentRoutes from './backend/routes/assignmentRoutes.js';
-import rentRoutes from './backend/routes/rentRoutes.js';
-import paymentRoutes from './backend/routes/paymentRoutes.js';
-import complaintRoutes from './backend/routes/complaintRoutes.js';
-import analyticsRoutes from './backend/routes/analyticsRoutes.js';
+import { ensureDbInitialized, createApp } from './backend/app.js';
 import { errorHandler } from './backend/middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
-  const app = express();
-  app.set('trust proxy', 1);
-  const PORT = process.env.PORT || 3000;
-  const isProduction = process.env.NODE_ENV === 'production';
+  const PORT = config.port || 3000;
+  const isProduction = config.nodeEnv === 'production' || process.env.VERCEL === '1';
 
   // 1. Database Connection & Initial Seeding
-  await connectDB();
-  await seedDatabase();
+  await ensureDbInitialized();
 
-  // 2. Security Middleware
-  // Helmet configured to allow AI Studio iframe embedding
-  app.use(
-    helmet({
-      contentSecurityPolicy: false,
-      crossOriginEmbedderPolicy: false,
-      frameguard: false,
-    })
-  );
-
-  // CORS configuration
-  app.use(
-    cors({
-      origin: true,
-      credentials: true,
-    })
-  );
-
-  // Rate Limiting on API endpoints
-  const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000, // Limit each IP to 1000 requests per window
-    standardHeaders: true,
-    legacyHeaders: false,
-    validate: {
-      forwardedHeader: false,
-    },
-    message: {
-      success: false,
-      message: 'Too many requests from this IP. Please try again later.',
-    },
-  });
-  app.use('/api', apiLimiter);
-
-  // Body Parsing & Cookies
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-  app.use(cookieParser());
-
-  // Health check
-  app.get('/api/health', (req, res) => {
-    res.status(200).json({
-      status: 'healthy',
-      app: 'RentWise',
-      version: '1.0.0',
-      timestamp: new Date().toISOString(),
-    });
-  });
-
-  // 3. API Routes Mounting
-  app.use('/api/auth', authRoutes);
-  app.use('/api/users', userRoutes);
-  app.use('/api/properties', propertyRoutes);
-  app.use('/api/rooms', roomRoutes);
-  app.use('/api/assignments', assignmentRoutes);
-  app.use('/api/rent-records', rentRoutes);
-  app.use('/api/payments', paymentRoutes);
-  app.use('/api/complaints', complaintRoutes);
-  app.use('/api/analytics', analyticsRoutes);
-
-  // Central Error Handler for API
-  app.use('/api', errorHandler);
+  // 2. Shared Express API app (security, routes, error handling)
+  const app = createApp();
 
   // 4. Vite Dev Middleware / Static Client Delivery
   // Create the HTTP server up-front so Vite's HMR WebSocket can attach to the

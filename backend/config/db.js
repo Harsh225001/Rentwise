@@ -16,7 +16,9 @@ export const connectDB = async () => {
     useMemoryStore = false;
     console.log(`[MongoDB] Connected successfully to: ${conn.connection.host}`);
   } catch (error) {
-    if (config.nodeEnv === 'production') {
+    const isProduction = config.nodeEnv === 'production' || process.env.VERCEL === '1';
+
+    if (isProduction) {
       // NEVER silently fall back to in-memory data in production — that causes
       // accounts/logins to appear and disappear. Fail loudly instead.
       console.error('');
