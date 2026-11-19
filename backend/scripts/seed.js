@@ -12,7 +12,24 @@ export async function seedDatabase() {
   try {
     const userCount = await User.countDocuments();
     if (userCount > 0) {
-      console.log('[Seed] Database already contains records. Skipping seed.');
+      // If a database exists but the configured admin is missing (e.g. a pre-existing
+      // collection), ensure the admin account still exists so login never fails.
+      const adminExists = await User.findOne({ email: config.initialAdmin.email.toLowerCase() });
+      if (adminExists) {
+        console.log('[Seed] Database already contains records. Skipping seed.');
+        return;
+      }
+      console.log('[Seed] Existing database found without configured admin. Creating admin account...');
+      const salt = await bcrypt.genSalt(10);
+      await User.create({
+        name: config.initialAdmin.name,
+        email: config.initialAdmin.email.toLowerCase(),
+        password: await bcrypt.hash(config.initialAdmin.password, salt),
+        role: 'admin',
+        phone: '+91 98201 11004',
+        isActive: true,
+      });
+      console.log(`[Seed] Admin account ready: ${config.initialAdmin.email.toLowerCase()}`);
       return;
     }
 
@@ -41,7 +58,7 @@ export async function seedDatabase() {
       role: 'landlord',
       phone: '+91 98230 45120',
       isActive: true,
-      avatar: '/src/assets/images/indian_landlord_portrait_1795086775127.jpg',
+      avatar: '/assets/images/indian_landlord_portrait_1795086775127.jpg',
     });
 
     const landlordMeenakshi = await User.create({
@@ -185,8 +202,8 @@ export async function seedDatabase() {
       description: 'Well-ventilated 2BHK and 3BHK society flats near Kothrud Metro station with 24x7 corporation water and power backup.',
       amenities: ['24x7 Power Backup', 'Covered Parking', 'Lift', 'CCTV Security', 'RO Water Supply', 'Rainwater Harvesting'],
       images: [
-        '/src/assets/images/indian_residency_hero_1795086777363.jpg',
-        '/src/assets/images/mumbai_living_interior_1795086776293.jpg',
+        '/assets/images/indian_residency_hero_1795086777363.jpg',
+        '/assets/images/mumbai_living_interior_1795086776293.jpg',
       ],
     });
 
@@ -201,7 +218,7 @@ export async function seedDatabase() {
       description: 'Boutique low-rise apartments with teak louvered balconies, dedicated work-from-home nooks, and walking distance to Indiranagar Metro.',
       amenities: ['High-speed Fiber WiFi', 'Stilt Parking', 'Power Backup', 'Security Guard', 'Intercom', 'Terrace Garden'],
       images: [
-        '/src/assets/images/bengaluru_courtyard_homes_1795086774452.jpg',
+        '/assets/images/bengaluru_courtyard_homes_1795086774452.jpg',
       ],
     });
 
@@ -216,7 +233,7 @@ export async function seedDatabase() {
       description: 'Sea-breeze facing residences in Bandra West with marble flooring, modular kitchens, and dedicated servant utility access.',
       amenities: ['Lift', 'Covered Parking', 'Piped PNG Gas', 'CCTV Security', 'Intercom'],
       images: [
-        '/src/assets/images/mumbai_living_interior_1795086776293.jpg',
+        '/assets/images/mumbai_living_interior_1795086776293.jpg',
       ],
     });
 
@@ -231,7 +248,7 @@ export async function seedDatabase() {
       description: 'Family-friendly residential wing close to Hinjewadi IT Park with landscaped podium and children play area.',
       amenities: ['Clubhouse', 'Gym', 'Covered Parking', '24x7 Security', 'Solar Water Heater'],
       images: [
-        '/src/assets/images/indian_residency_hero_1795086777363.jpg',
+        '/assets/images/indian_residency_hero_1795086777363.jpg',
       ],
     });
 
@@ -246,7 +263,7 @@ export async function seedDatabase() {
       description: 'Peaceful tree-lined flats in Gandhi Nagar with Vaastu-compliant layouts and metro water connection.',
       amenities: ['Lift', 'Power Backup', 'Covered Parking', 'Rainwater Harvesting', 'CCTV Security'],
       images: [
-        '/src/assets/images/bengaluru_courtyard_homes_1795086774452.jpg',
+        '/assets/images/bengaluru_courtyard_homes_1795086774452.jpg',
       ],
     });
 
@@ -261,7 +278,7 @@ export async function seedDatabase() {
       description: 'Independent builder floors near Galleria Market with private lift lobby, stilt parking, and full DG backup.',
       amenities: ['100% DG Backup', 'Private Lift', 'Stilt Parking', 'Piped Gas', 'Modular Kitchen'],
       images: [
-        '/src/assets/images/mumbai_living_interior_1795086776293.jpg',
+        '/assets/images/mumbai_living_interior_1795086776293.jpg',
       ],
     });
 
@@ -276,7 +293,7 @@ export async function seedDatabase() {
       description: 'Spacious 3BHK flats overlooking KBR Park greenery with quick connectivity to HITEC City.',
       amenities: ['24x7 Security', 'Gym', 'Covered Parking', 'Power Backup', 'RO Water Supply'],
       images: [
-        '/src/assets/images/indian_residency_hero_1795086777363.jpg',
+        '/assets/images/indian_residency_hero_1795086777363.jpg',
       ],
     });
 
@@ -1005,6 +1022,7 @@ export async function seedDatabase() {
     });
 
     console.log('[Seed] RentWise seeded with 1 Admin, 4 Landlords, 10 Tenants, 7 Properties, 15 Flats, 9 Leases & 10 Maintenance Tickets.');
+    console.log(`[Seed] Demo logins -> admin: ${config.initialAdmin.email.toLowerCase()} / ${config.initialAdmin.password} | landlord: landlord@rentwise.in / Landlord@123 | tenant: tenant@rentwise.in / Tenant@123`);
   } catch (error) {
     console.error('[Seed] Error during seeding:', error);
   }

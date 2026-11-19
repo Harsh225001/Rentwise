@@ -158,7 +158,7 @@ export default function LandingPage() {
           <div className="lg:col-span-6">
             <div className="h-full rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
               <img
-                src="/src/assets/images/indian_residency_hero_1795086777363.jpg"
+                src="/assets/images/indian_residency_hero_1795086777363.jpg"
                 alt="Shanti Niketan Residency apartment building in Pune"
                 referrerPolicy="no-referrer"
                 className="w-full h-72 lg:h-full object-cover min-h-[320px]"
@@ -316,7 +316,7 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
             <img
-              src="/src/assets/images/bengaluru_courtyard_homes_1795086774452.jpg"
+              src="/assets/images/bengaluru_courtyard_homes_1795086774452.jpg"
               alt="Indiranagar Courtyard Homes in Bengaluru"
               referrerPolicy="no-referrer"
               className="w-full h-56 object-cover"
@@ -344,7 +344,7 @@ export default function LandingPage() {
 
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
             <img
-              src="/src/assets/images/mumbai_living_interior_1795086776293.jpg"
+              src="/assets/images/mumbai_living_interior_1795086776293.jpg"
               alt="Pali Crest Apartments in Bandra West Mumbai"
               referrerPolicy="no-referrer"
               className="w-full h-56 object-cover"

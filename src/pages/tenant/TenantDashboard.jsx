@@ -66,7 +66,7 @@ export default function TenantDashboard() {
   const diffDays = Math.ceil((leaseEnd - today) / (1000 * 60 * 60 * 24));
   const coverImage =
     (property?.images && property.images.length > 0 && property.images[0]) ||
-    '/src/assets/images/indian_residency_hero_1795086777363.jpg';
+    '/assets/images/indian_residency_hero_1795086777363.jpg';
 
   return (
     <div className="space-y-8">

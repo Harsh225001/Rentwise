@@ -150,7 +150,7 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const defaultImg = '/src/assets/images/indian_residency_hero_1795086777363.jpg';
+  const defaultImg = '/assets/images/indian_residency_hero_1795086777363.jpg';
   const displayImg = (propertyData.images && propertyData.images[0]) || defaultImg;
   const stats = propertyData.stats || { totalRooms: 0, occupiedRooms: 0, vacantRooms: 0, occupancyRate: 0 };
   const rooms = propertyData.rooms || [];

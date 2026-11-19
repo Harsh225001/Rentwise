@@ -220,7 +220,7 @@ export default function PropertiesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((prop) => {
             const stats = prop.stats || { totalRooms: 0, occupiedRooms: 0, vacantRooms: 0, occupancyRate: 0 };
-            const defaultImg = '/src/assets/images/indian_residency_hero_1795086777363.jpg';
+            const defaultImg = '/assets/images/indian_residency_hero_1795086777363.jpg';
             const displayImg = (prop.images && prop.images[0]) || defaultImg;
 
             return (

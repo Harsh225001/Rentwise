@@ -140,7 +140,7 @@ export const createProperty = async (req, res, next) => {
       propertyType: propertyType || 'apartment',
       description: description || '',
       amenities: Array.isArray(amenities) ? amenities : [],
-      images: Array.isArray(images) && images.length > 0 ? images : ['/src/assets/images/indian_residency_hero_1795086777363.jpg'],
+      images: Array.isArray(images) && images.length > 0 ? images : ['/assets/images/indian_residency_hero_1795086777363.jpg'],
     });
 
     res.status(201).json({
